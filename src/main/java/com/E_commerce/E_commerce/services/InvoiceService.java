@@ -2,14 +2,16 @@ package com.E_commerce.E_commerce.services;
 
 import com.E_commerce.E_commerce.entities.Invoice;
 import com.E_commerce.E_commerce.repositories.InvoiceRepository;
-import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class InvoiceService {
+
     @Autowired
     private InvoiceRepository invoiceRepository;
 
@@ -17,26 +19,31 @@ public class InvoiceService {
         try {
             return invoiceRepository.save(invoice);
         } catch (Exception e) {
-            throw new ServiceException("Error creating invoice", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error creating invoice", e);
         }
     }
 
     public Invoice searchById(Long id) {
         try {
-            Optional<Invoice> invoiceOptional = invoiceRepository.findById(id);
-            if (!invoiceOptional.isPresent()) {
-                throw new ServiceException("Invoice not found with id: " + id);
-            }
-            return invoiceOptional.get();
+            return invoiceRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found with id: " + id));
         } catch (Exception e) {
-            throw new ServiceException("Error searching by id", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error searching by id", e);
+        }
+    }
+
+    public List<Invoice> searchAll() {
+        try {
+            return invoiceRepository.findAll();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving invoices", e);
         }
     }
 
     public Invoice updateInvoice(Long id, Invoice updatedInvoice) {
         try {
             Invoice existingInvoice = invoiceRepository.findById(id)
-                    .orElseThrow(() -> new ServiceException("Invoice not found with id: " + id));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found with id: " + id));
 
             existingInvoice.setClients(updatedInvoice.getClients());
             existingInvoice.setTotal(updatedInvoice.getTotal());
@@ -47,18 +54,18 @@ public class InvoiceService {
 
             return invoiceRepository.save(existingInvoice);
         } catch (Exception e) {
-            throw new ServiceException("Error updating invoice", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error updating invoice", e);
         }
     }
 
     public void deleteInvoice(Long id) {
         try {
             if (!invoiceRepository.existsById(id)) {
-                throw new ServiceException("Invoice not found with id: " + id);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found with id: " + id);
             }
             invoiceRepository.deleteById(id);
         } catch (Exception e) {
-            throw new ServiceException("Error deleting invoice", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting invoice", e);
         }
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -18,24 +19,38 @@ public class InvoiceController {
 
     @GetMapping
     public ResponseEntity<List<Invoice>> getAllInvoices() {
-        List<Invoice> invoices = invoiceService.searchAll();
-        return new ResponseEntity<>(invoices, HttpStatus.OK);
+        try {
+            List<Invoice> invoices = invoiceService.searchAll();
+            return new ResponseEntity<>(invoices, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving invoices", e);
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Invoice> getInvoiceById(@PathVariable Long id) {
-        Invoice invoice = invoiceService.searchById(id);
-        if (invoice != null) {
-            return new ResponseEntity<>(invoice, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            Invoice invoice = invoiceService.searchById(id);
+            if (invoice != null) {
+                return new ResponseEntity<>(invoice, HttpStatus.OK);
+            } else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found with id: " + id);
+            }
+        } catch (ResponseStatusException e) {
+            throw e; // Re-throw the specific exception
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving invoice by id", e);
         }
     }
 
     @PostMapping
     public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) {
-        Invoice createdInvoice = invoiceService.create(invoice);
-        return new ResponseEntity<>(createdInvoice, HttpStatus.CREATED);
+        try {
+            Invoice createdInvoice = invoiceService.create(invoice);
+            return new ResponseEntity<>(createdInvoice, HttpStatus.CREATED);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error creating invoice", e);
+        }
     }
 
     @PutMapping("/{id}")
@@ -43,8 +58,10 @@ public class InvoiceController {
         try {
             Invoice invoice = invoiceService.updateInvoice(id, updatedInvoice);
             return new ResponseEntity<>(invoice, HttpStatus.OK);
+        } catch (ResponseStatusException e) {
+            throw e; // Re-throw the specific exception
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error updating invoice", e);
         }
     }
 
@@ -53,8 +70,10 @@ public class InvoiceController {
         try {
             invoiceService.deleteInvoice(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (ResponseStatusException e) {
+            throw e; // Re-throw the specific exception
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting invoice", e);
         }
     }
 }
