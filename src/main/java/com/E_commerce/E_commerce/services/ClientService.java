@@ -34,7 +34,7 @@ public class ClientService {
     public Clients updateClient(Long id, Clients updatedClient) {
         try {
             Clients existingClient = clientRepository.findById(id)
-                    .orElseThrow(() -> new ServiceException("Client not found with id: " + id));
+                    .orElseThrow(() -> new ServiceException("Client not found with that id"));
 
             existingClient.setName(updatedClient.getName());
             existingClient.setEmail(updatedClient.getEmail());
