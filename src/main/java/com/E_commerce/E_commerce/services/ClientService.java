@@ -5,9 +5,11 @@ import com.E_commerce.E_commerce.entities.Products;
 import com.E_commerce.E_commerce.repositories.ClientRepository;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ClientService {
     @Autowired
     private ClientRepository clientRepository;
@@ -34,7 +36,7 @@ public class ClientService {
     public Clients updateClient(Long id, Clients updatedClient) {
         try {
             Clients existingClient = clientRepository.findById(id)
-                    .orElseThrow(() -> new ServiceException("Client not found with id: " + id));
+                    .orElseThrow(() -> new ServiceException("Client not found with that id"));
 
             existingClient.setName(updatedClient.getName());
             existingClient.setEmail(updatedClient.getEmail());

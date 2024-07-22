@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 
@@ -20,20 +19,22 @@ public class Invoice {
 
     @Getter @Setter
     private LocalDateTime dateEmission;
+
     @Getter @Setter
     private String payMethod;
+
     @Getter @Setter
     private double total;
+
     @Getter @Setter
     private String state;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
+    @Getter @Setter
     private Clients clients;
 
-    @OneToMany(mappedBy = "comprobante", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
+    @Getter @Setter
     private List<DetailInvoice> detailInvoices;
-
-
-
 }
