@@ -49,7 +49,7 @@ public class ProductService {
                 throw new ServiceException("Error updating product", e);
             }
         } else {
-            throw new ServiceException("Product not found with id: " + id);
+            throw new ServiceException("Product not found with that id");
         }
     }
     public void deleteProduct(Long id) {

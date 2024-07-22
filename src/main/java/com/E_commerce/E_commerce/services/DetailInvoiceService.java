@@ -58,7 +58,7 @@ public class DetailInvoiceService {
     public DetailInvoice updateDetailInvoice(Long id, DetailInvoice updatedDetailInvoice) {
         try {
             DetailInvoice existingDetailInvoice = detailInvoiceRepository.findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Detail invoice not found with id: " + id));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Detail invoice not found with that id"));
 
             existingDetailInvoice.setQuantity(updatedDetailInvoice.getQuantity());
             existingDetailInvoice.setUnitPrice(updatedDetailInvoice.getUnitPrice());
@@ -73,7 +73,7 @@ public class DetailInvoiceService {
     public void deleteDetailInvoice(Long id) {
         try {
             if (!detailInvoiceRepository.existsById(id)) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Detail invoice not found with id: " + id);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Detail invoice not found with that id");
             }
             detailInvoiceRepository.deleteById(id);
         } catch (Exception e) {

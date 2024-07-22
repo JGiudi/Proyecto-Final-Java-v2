@@ -26,7 +26,7 @@ public class InvoiceService {
     public Invoice searchById(Long id) {
         try {
             return invoiceRepository.findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found with id: " + id));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found with id"));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error searching by id", e);
         }
@@ -36,14 +36,14 @@ public class InvoiceService {
         try {
             return invoiceRepository.findAll();
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving invoices", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error searching all invoices", e);
         }
     }
 
     public Invoice updateInvoice(Long id, Invoice updatedInvoice) {
         try {
             Invoice existingInvoice = invoiceRepository.findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found with id: " + id));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found with id"));
 
             existingInvoice.setClients(updatedInvoice.getClients());
             existingInvoice.setTotal(updatedInvoice.getTotal());
@@ -61,7 +61,7 @@ public class InvoiceService {
     public void deleteInvoice(Long id) {
         try {
             if (!invoiceRepository.existsById(id)) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found with id: " + id);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found with that id");
             }
             invoiceRepository.deleteById(id);
         } catch (Exception e) {
